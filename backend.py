@@ -1,5 +1,8 @@
 import numpy as np
 import cv2
+from scipy.signal import convolve2d 
+#Gaussian functions/constants
+from math import exp, sqrt, pi
 
 
 def imgDenoising_Median(image, shape):
@@ -23,12 +26,47 @@ def medianPatch(img, shape):
     #Calculate new patch based on the median
     newPatch = np.zeros((shape, shape))
 
-    #Fill newpatch by taking shape-shape patches of each image.
+    #Fill newpatch by taking shape-by-shape patches of each image.
     for i in range(shape):
         for j in range(shape):
             newPatch[i,j] = np.median(tempArray[i:i+3,j:j+3])
 
     return newPatch
+
+def imgDenoising_Gaussian(image, shape):
+    imgNew = image.copy()
+    #Apply patch to each channel.
+    for i in range(0, image.shape[0] - shape, shape):
+        for j in range(0, image.shape[1] - shape, shape):
+            for k in range(3):
+                imgNew[i:i+shape,j:j+shape,k] = gaussian_patch(imgNew[i:i+shape, j:j+shape, k], shape)
+    return imgNew
+#Gaussian function used for gaussian smoothing
+def gaussian(sigma, x, y):
+    return (1/(sigma*sqrt(2*pi)))*exp(-(((x)**2) + (y)**2)/(2*sigma**2))
+
+def gaussian_patch(patch, shape):
+    tempPatch = patch.view()
+    tempPatch = np.array(patch, dtype=float)
+    tempPatch /=255
+    blur = 100000
+    sigma = blur / 3
+    
+    #Create Kernel
+    kernel = np.ones((shape, shape))
+    for i in range(shape):
+        for j in range(shape):
+            kernel[i,j] = gaussian(sigma, i - blur, j - blur)
+    
+    #Normalize Kernel
+    kernel /= np.sum(kernel)
+    
+    newPatch = convolve2d(tempPatch,kernel, mode='valid')
+    
+    newPatch *= 255
+    newPatch = np.array(newPatch, dtype=np.uint8)
+    return newPatch
+
 
 def histEq():
     pass
