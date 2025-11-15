@@ -71,6 +71,19 @@ def gaussian_patch(patch, shape):
 def histEq():
     pass
 
+def unsharpMask(img, shape, strength=1):
+    #Pseudocode:
+    #1: Blur image with Gaussian
+    #2: Get the difference by subtacting og image with blur
+    #3: Add mask to the image.
+    img_f = img.copy().astype(np.float32)
+    newMask = imgDenoising_Gaussian(img_f, shape)
+    maskDiff = img - newMask
+    sharpened = np.clip(img + (strength * maskDiff),0,255).astype(np.uint8)
+    #Fixes alpha channel
+    sharpened[:,:,3] = 255
+    return sharpened
+
 
 test = np.array(([1,2,3], [4,8,6], [7,5,9]))
 print(medianPatch(test, 3))
