@@ -46,8 +46,9 @@ def gaussian(sigma, x, y):
     return (1/(sigma*sqrt(2*pi)))*exp(-(((x)**2) + (y)**2)/(2*sigma**2))
 
 def gaussian_patch(patch, shape):
-    tempPatch = patch.view()
-    tempPatch = np.array(patch, dtype=float)
+    tempPatch = patch.copy()
+    tempPatch = np.array(patch, dtype=np.float32)
+    #Converts kernel to float
     tempPatch /=255
     blur = 100000
     sigma = blur / 3
@@ -67,8 +68,28 @@ def gaussian_patch(patch, shape):
     newPatch = np.array(newPatch, dtype=np.uint8)
     return newPatch
 
+def imgDenoising_Bilateral():
+    pass
 
-def histEq():
+def histEq(img):
+    #Convert to greyscale first.
+    img_Grey = cv2.cvtColor(img, cv2.COLOR_RGBA2GRAY)
+
+    #Create probability distribution function
+    bins = np.arange(256 + 1)
+    imageHist, v = np.histogram(img_Grey, bins) #v is defined so we only get the party we care about for calculations.
+
+    #Create CDF
+    pdf = imageHist / np.sum(imageHist)
+    cdf = np.cumsum(pdf)
+
+    #Apply cdf to original image, effectively fixing the colours.
+    img_RGBA_Equal = (cdf*255)[img].astype(np.uint8)
+    
+    return img_RGBA_Equal
+
+
+def claheEnhancement():
     pass
 
 def unsharpMask(img, shape, strength=1):
@@ -76,7 +97,11 @@ def unsharpMask(img, shape, strength=1):
     #1: Blur image with Gaussian
     #2: Get the difference by subtacting og image with blur
     #3: Add mask to the image.
+    
+    #Works in float32 space to avoid errors.
     img_f = img.copy().astype(np.float32)
+    
+    #Apply Gaussian Blur (which is what the gaussian filter is)
     newMask = imgDenoising_Gaussian(img_f, shape)
     maskDiff = img - newMask
     sharpened = np.clip(img + (strength * maskDiff),0,255).astype(np.uint8)
