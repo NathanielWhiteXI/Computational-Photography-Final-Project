@@ -3,7 +3,7 @@ import cv2
 from scipy.signal import convolve2d 
 #Gaussian functions/constants
 from math import exp, sqrt, pi
-
+#TODO: Implement this as a non-destructive workflow, to be really impressive and to get that A
 
 def imgDenoising_Median(image, shape):
     imgNew = image.copy()
@@ -41,6 +41,7 @@ def imgDenoising_Gaussian(image, shape):
             for k in range(3):
                 imgNew[i:i+shape,j:j+shape,k] = gaussian_patch(imgNew[i:i+shape, j:j+shape, k], shape)
     return imgNew
+
 #Gaussian function used for gaussian smoothing
 def gaussian(sigma, x, y):
     return (1/(sigma*sqrt(2*pi)))*exp(-(((x)**2) + (y)**2)/(2*sigma**2))
@@ -68,9 +69,6 @@ def gaussian_patch(patch, shape):
     newPatch = np.array(newPatch, dtype=np.uint8)
     return newPatch
 
-def imgDenoising_Bilateral():
-    pass
-
 def histEq(img):
     #Convert to greyscale first.
     img_Grey = cv2.cvtColor(img, cv2.COLOR_RGBA2GRAY)
@@ -88,16 +86,7 @@ def histEq(img):
     
     return img_RGBA_Equal
 
-
-def claheEnhancement():
-    pass
-
 def unsharpMask(img, shape, strength=1):
-    #Pseudocode:
-    #1: Blur image with Gaussian
-    #2: Get the difference by subtacting og image with blur
-    #3: Add mask to the image.
-    
     #Works in float32 space to avoid errors.
     img_f = img.copy().astype(np.float32)
     
@@ -109,26 +98,26 @@ def unsharpMask(img, shape, strength=1):
     sharpened[:,:,3] = 255
     return sharpened
     
-def run_auto_pipeline(img_array):
+def run_auto_pipeline(img_array, shape):
     """
     A simple automatic pipeline:
     1. Median denoise
-    2. CLAHE histogram equalization
+    2. Histogram Equalization
     3. Unsharp mask
     """
 
     # Step 1: median filter
-    out = imgDenoising_Median(img_array, shape=3)
+    out = imgDenoising_Median(img_array, shape)
 
     # Step 2: histogram equalization
     out = histEq(out)
 
     # Step 3: sharpening
-    out = unsharpMask(out, shape=3, strength=1.0)
+    out = unsharpMask(out, shape, strength=1)
 
     return out
 
 
 
-test = np.array(([1,2,3], [4,8,6], [7,5,9]))
-print(medianPatch(test, 3))
+# test = np.array(([1,2,3], [4,8,6], [7,5,9]))
+# print(medianPatch(test, 3))
