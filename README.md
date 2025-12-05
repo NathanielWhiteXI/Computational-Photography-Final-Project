@@ -1,1 +1,1 @@
-"# Computational-Photography-Final-Project" 
+Our Computational Final Project
