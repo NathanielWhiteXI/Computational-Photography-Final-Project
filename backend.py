@@ -3,7 +3,6 @@ import cv2
 from scipy.signal import convolve2d 
 #Gaussian functions/constants
 from math import exp, sqrt, pi
-#TODO: Implement this as a non-destructive workflow, to be really impressive and to get that A
 
 def imgDenoising_Median(image, shape):
     imgNew = image.copy()
@@ -117,7 +116,6 @@ def run_auto_pipeline(img_array, shape):
 
     return out
 
-
-
+#Test Functions
 # test = np.array(([1,2,3], [4,8,6], [7,5,9]))
 # print(medianPatch(test, 3))

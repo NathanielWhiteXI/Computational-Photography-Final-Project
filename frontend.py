@@ -45,13 +45,13 @@ class ImageApp(QMainWindow):
 
         self.setCentralWidget(c_widget)
 
-        # Store original pixmap so we can rescale it
+        #Store original pixmap so we can rescale it
         self.original_pixmap = None
 
         toolbar = QToolBar("Main Toolbar")
         self.addToolBar(toolbar)
 
-        # Create actions (buttons)
+        #Create actions (buttons)
 
         open_action = QAction("Open", self)
         open_action.triggered.connect(self.open_image)
@@ -80,7 +80,7 @@ class ImageApp(QMainWindow):
         undo_action = QAction("Undo", self)
         undo_action.triggered.connect(self.undo_image)
 
-        # Add actions to toolbar
+        #Add actions to toolbar
         toolbar.addAction(open_action)
         toolbar.addAction(save_action)
         toolbar.addAction(clear_action)
